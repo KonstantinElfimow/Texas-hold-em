@@ -163,34 +163,54 @@ class GameService {
         if (tempWinners.size() > 1) {
             Player player1 = tempWinners.get(0);
             Player player2 = tempWinners.get(1);
+
+            Card theHighestKicker = playersCombo.get(player1).getKicker();
             for (int i = 1; i < tempWinners.size(); i++) {
                 Combo players1Combo = playersCombo.get(player1);
                 Combo players2Combo = playersCombo.get(player2);
 
-                Comparator<Card> comparator = (player1Card, player2Card) -> player1Card.getValue().getKickerScore() - player2Card.getValue().getKickerScore();
+                Comparator<Card> comparator = (player1Card, player2Card) -> player2Card.getValue().getKickerScore() - player1Card.getValue().getKickerScore();
                 Card kicker1 = players1Combo.getKicker();
                 Card kicker2 = players2Combo.getKicker();
-                if (!player1.equals(player2)) {
-                    int compare = comparator.compare(kicker1, kicker2);
-                    if (compare > 0) {
-                        finalWinners.add(player1);
-                        finalWinners.remove(player2);
-                        if (i + 1 != tempWinners.size()) {
-                            player2 = tempWinners.get(i + 1);
-                        }
-                    } else if (compare < 0) {
-                        finalWinners.add(player2);
-                        finalWinners.remove(player1);
-                        if (i + 1 != tempWinners.size()) {
-                            player1 = tempWinners.get(i + 1);
-                        }
-                    } else {
-                        finalWinners.addAll(Arrays.asList(player1, player2));
-                        if (i + 1 != tempWinners.size()) {
-                            player2 = tempWinners.get(i + 1);
-                        }
+
+                List<Card> list = new ArrayList<>(Arrays.asList(kicker1, kicker2));
+                for (int j = 0; j < 2; j++) {
+                    int dif = comparator.compare(theHighestKicker, list.get(j));
+                    if (dif >= 0) {
+                        theHighestKicker = list.get(j);
                     }
-                } else player2 = tempWinners.get(i + 1);
+                }
+
+                int compareKickers = comparator.compare(kicker1, kicker2);
+                if (compareKickers > 0 && comparator.compare(theHighestKicker, kicker2) == 0) {
+                    if (!finalWinners.contains(player2)) {
+                        finalWinners.add(player2);
+                    }
+                    finalWinners.remove(player1);
+                    if (i + 1 != tempWinners.size()) {
+                        player1 = player2;
+                        player2 = tempWinners.get(i + 1);
+                    }
+                } else if (compareKickers < 0 && comparator.compare(theHighestKicker, kicker1) == 0) {
+                    if (!finalWinners.contains(player1)) {
+                        finalWinners.add(player1);
+                    }
+                    finalWinners.remove(player2);
+                    if (i + 1 != tempWinners.size()) {
+                        player2 = tempWinners.get(i + 1);
+                    }
+                } else if (compareKickers == 0 && comparator.compare(theHighestKicker, kicker1) == 0) {
+                    if (!finalWinners.contains(player1)) {
+                        finalWinners.add(player1);
+                    }
+                    if (!finalWinners.contains(player2)) {
+                        finalWinners.add(player2);
+                    }
+                    if (i + 1 != tempWinners.size()) {
+                        player1 = player2;
+                        player2 = tempWinners.get(i + 1);
+                    }
+                }
             }
         } else finalWinners = tempWinners;
 

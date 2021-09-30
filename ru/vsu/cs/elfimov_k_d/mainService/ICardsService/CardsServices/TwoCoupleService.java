@@ -22,14 +22,11 @@ public class TwoCoupleService implements ICardsService {
 
         int count = 0;
         Card card1 = allCards.get(0);
-        Card kicker = null;
+        Card kicker = card1;
         for (int i = 1; i < allCards.size(); i++) {
             Card card2 = allCards.get(i);
             if (card1.getValue().equals(card2.getValue())) {
                 if (hand.contains(card1) || hand.contains(card2)) {
-                    if (kicker == null) {
-                        kicker = card1;
-                    }
                     count++;
                     if (count == 2) {
                         return new Combo(ComboEnum.TWOCOUPLE, allCards, kicker);
@@ -39,6 +36,7 @@ public class TwoCoupleService implements ICardsService {
                     }
                 }
             } else {
+                kicker = card2;
                 card1 = card2;
             }
         }

@@ -6,6 +6,7 @@ import ru.vsu.cs.elfimov_k_d.model.Combo;
 import ru.vsu.cs.elfimov_k_d.model.ComboEnum;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class FleshService implements ICardsService {
@@ -18,19 +19,30 @@ public class FleshService implements ICardsService {
 
         int count = 0;
         Card card1 = allCards.get(0);
-        Card kicker = null;
+        Card kicker = card1;
+
+        List<Card> listToCheckValid = new ArrayList<>(Collections.singleton(card1));
         for (int i = 1; i < allCards.size(); i++) {
             Card card2 = allCards.get(i);
             int dif = card1.getTypeOfSuit().getId() - card2.getTypeOfSuit().getId();
             if (dif == 0) {
-                if (kicker == null) {
-                    kicker = card1;
-                }
                 count++;
+                if (kicker == null) {
+                    kicker = card2;
+                }
+                listToCheckValid.add(card2);
                 if (count == 4) {
-                    return new Combo(ComboEnum.FLESH, allCards, kicker);
+                    if (listToCheckValid.contains(hand.get(0)) || listToCheckValid.contains(hand.get(1))) {
+                        return new Combo(ComboEnum.FLESH, allCards, kicker);
+                    } else {
+                        listToCheckValid.clear();
+                        kicker = null;
+                        count = 0;
+                    }
                 }
             } else {
+                listToCheckValid.clear();
+                listToCheckValid.add(card2);
                 kicker = null;
                 count = 0;
             }

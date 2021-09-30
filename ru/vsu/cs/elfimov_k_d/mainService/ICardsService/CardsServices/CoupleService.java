@@ -17,19 +17,16 @@ public class CoupleService implements ICardsService {
         allCards.sort((c1, c2) -> c2.getValue().getKickerScore() - c1.getValue().getKickerScore());
 
         Card card1 = allCards.get(0);
-        Card kicker = null;
+        Card kicker = card1;
         for (int i = 1; i < allCards.size(); i++) {
             Card card2 = allCards.get(i);
             if (card1.getValue().equals(card2.getValue())) {
-                if (kicker == null) {
-                    kicker = card1;
-                }
                 if (hand.contains(card1) || hand.contains(card2)) {
                     return new Combo(ComboEnum.COUPLE, allCards, kicker);
                 }
             } else {
+                kicker = card2;
                 card1 = card2;
-                kicker = null;
             }
         }
         return null;
