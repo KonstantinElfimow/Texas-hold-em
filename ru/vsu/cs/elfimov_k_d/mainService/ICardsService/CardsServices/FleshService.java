@@ -7,6 +7,7 @@ import ru.vsu.cs.elfimov_k_d.model.ComboEnum;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class FleshService implements ICardsService {
@@ -15,7 +16,21 @@ public class FleshService implements ICardsService {
         List<Card> allCards = new ArrayList<>();
         allCards.addAll(hand);
         allCards.addAll(table);
-        allCards.sort((c1, c2) -> c1.getTypeOfSuit().getId() - c2.getTypeOfSuit().getId());
+        allCards.sort((c1, c2) -> {
+            int dif = c1.getTypeOfSuit().getId() - c2.getTypeOfSuit().getId();
+            if (dif == 0) {
+                return c2.getValue().getKickerScore() - c1.getValue().getKickerScore();
+            } else {
+                return dif;
+            }
+        });
+
+        Comparator<Card> comparator = (c1, c2) -> {
+            if (c1.getTypeOfSuit().getId() - c2.getTypeOfSuit().getId() == 0) {
+                return 0;
+            }
+            return 1;
+        };
 
         int count = 0;
         Card card1 = allCards.get(0);
@@ -24,8 +39,8 @@ public class FleshService implements ICardsService {
         List<Card> listToCheckValid = new ArrayList<>(Collections.singleton(card1));
         for (int i = 1; i < allCards.size(); i++) {
             Card card2 = allCards.get(i);
-            int dif = card1.getTypeOfSuit().getId() - card2.getTypeOfSuit().getId();
-            if (dif == 0) {
+
+            if (comparator.compare(card1, card2) == 0) {
                 count++;
                 if (kicker == null) {
                     kicker = card2;

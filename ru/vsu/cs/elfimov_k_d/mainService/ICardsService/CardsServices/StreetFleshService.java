@@ -7,6 +7,7 @@ import ru.vsu.cs.elfimov_k_d.model.ComboEnum;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class StreetFleshService implements ICardsService {
@@ -24,6 +25,15 @@ public class StreetFleshService implements ICardsService {
             }
         });
 
+        Comparator<Card> comparator = (c1, c2) -> {
+            if (c1.getTypeOfSuit().getId() - c2.getTypeOfSuit().getId() == 0) {
+                if (c1.getValue().getKickerScore() - c2.getValue().getKickerScore() == 1) {
+                    return 1;
+                }
+            }
+            return 0;
+        };
+
         int count = 0;
         Card card1 = allCards.get(0);
         Card kicker = card1;
@@ -31,12 +41,10 @@ public class StreetFleshService implements ICardsService {
         List<Card> listToCheckValid = new ArrayList<>(Collections.singleton(card1));
         for (int i = 1; i < allCards.size(); i++) {
             Card card2 = allCards.get(i);
-            int difId = card1.getTypeOfSuit().getId() - card2.getTypeOfSuit().getId();
-            int difKickerCount = card1.getValue().getKickerScore() - card2.getValue().getKickerScore();
-            if (difId == 0 && difKickerCount == 1) {
+            if (comparator.compare(card1, card2) > 0) {
                 count++;
                 if (kicker == null) {
-                    kicker = card2;
+                    kicker = card1;
                 }
                 listToCheckValid.add(card2);
                 if (count == 4) {

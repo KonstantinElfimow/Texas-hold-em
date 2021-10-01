@@ -41,7 +41,8 @@ class GameService {
 
     private void doStep(Game game) {
         Queue<Player> newQueue = new LinkedList<>();
-        for (Player player : game.getQueue()) {
+        Queue<Player> queue = game.getQueue();
+        for (Player player : queue) {
             boolean playerInGame = true;
             List<Card> hisHand = game.getPlayersWithCards().get(player);
             game.getGameWatcherService().playerWithCardsComment(game, player);
