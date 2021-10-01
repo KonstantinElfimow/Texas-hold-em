@@ -22,89 +22,55 @@ public class FullHouseService implements ICardsService {
         allCards.addAll(table);
         allCards.sort((c1, c2) -> c2.getValue().getKickerScore() - c1.getValue().getKickerScore());
 
-        int l = 1;
-        int lCountTheSameCards = 0;
-        int r = allCards.size() - 2;
-        int rCountTheSameCards = 0;
+        Card card1 = allCards.get(0);
+        Card kicker = card1;
+        boolean flag;
 
-        Card cardL1 = allCards.get(l--);
-        Card kicker = cardL1;
-        boolean flag1 = true;
-        Card cardR1 = allCards.get(r++);
-        boolean flag2 = true;
+        boolean couple = false;
+        boolean set = false;
 
-        List<Card> lListToCheckValid = new ArrayList<>(Collections.singleton(cardL1));
-        List<Card> rListToCheckValid = new ArrayList<>(Collections.singleton(cardR1));
+        List<Card> listToCheckValid = new ArrayList<>(Collections.singleton(card1));
 
         Comparator<Card> comparator = (c1, c2) -> c1.getValue().getKickerScore() - c2.getValue().getKickerScore();
-        for (int i = 0; i < allCards.size(); i++) {
-            Card cardL2 = allCards.get(l);
-            Card cardR2 = allCards.get(r);
+        for (int i = 1; i < allCards.size(); i++) {
+            Card card2 = allCards.get(i);
+            if (comparator.compare(card1, card2) == 0) {
+                if (!couple && !set) {
+                    kicker = card1;
+                }
+                flag = true;
+            } else {
+                listToCheckValid.clear();
+                if (!couple && !set) {
+                    kicker = card2;
+                }
+                flag = false;
+            }
+            listToCheckValid.add(card2);
+            card1 = card2;
 
-            if (lCountTheSameCards < 1) {
-                if (comparator.compare(cardL1, cardL2) == 0) {
-                    kicker = cardL1;
-                    lCountTheSameCards++;
-                    if (lCountTheSameCards == 1) {
-                        flag1 = true;
-                    }
-                    lListToCheckValid.add(cardL2);
-                } else {
-                    lListToCheckValid.clear();
-                    lListToCheckValid.add(cardL2);
-                    cardL1 = cardL2;
-                    kicker = null;
-                    lCountTheSameCards = 0;
-                }
-                l++;
-            }
-            if (flag1 && lCountTheSameCards == 1) {
-                if (l + 1 != r) {
-                    Card afterCardL2 = allCards.get(l++);
-                    if (comparator.compare(cardL1, afterCardL2) == 0) {
-                        lListToCheckValid.add(afterCardL2);
-                        lCountTheSameCards++;
+            if (flag) {
+                if (i + 1 != allCards.size()) {
+                    Card afterCard2 = allCards.get(i++);
+                    if (comparator.compare(card1, afterCard2) == 0) {
+                        listToCheckValid.add(afterCard2);
                     }
                 }
-                if (!(lListToCheckValid.contains(hand.get(0)) || lListToCheckValid.contains(hand.get(1)))) {
-                    kicker = null;
-                    lListToCheckValid.clear();
-                    lCountTheSameCards = 0;
-                }
-                flag1 = false;
-            }
-
-            if (rCountTheSameCards < 1) {
-                if (comparator.compare(cardR1, cardR2) == 0) {
-                    rCountTheSameCards++;
-                    if (rCountTheSameCards == 1) {
-                        flag2 = true;
-                    }
-                    rListToCheckValid.add(cardR2);
-                } else {
-                    rListToCheckValid.clear();
-                    rListToCheckValid.add(cardR2);
-                    cardR1 = cardR2;
-                    rCountTheSameCards = 0;
-                }
-                r--;
-            }
-            if (flag2 && rCountTheSameCards == 1) {
-                if (r - 1 != l) {
-                    Card beforeCardR2 = allCards.get(r--);
-                    if (comparator.compare(cardR1, beforeCardR2) == 0) {
-                        rListToCheckValid.add(beforeCardR2);
-                        rCountTheSameCards++;
+                if (listToCheckValid.contains(hand.get(0)) || listToCheckValid.contains(hand.get(1))) {
+                    if (listToCheckValid.size() == 2) {
+                        couple = true;
+                    } else if (listToCheckValid.size() == 3) {
+                        if (set) {
+                            couple = true;
+                        } else {
+                            set = true;
+                        }
                     }
                 }
-                if (!(rListToCheckValid.contains(hand.get(0)) || rListToCheckValid.contains(hand.get(1)))) {
-                    rListToCheckValid.clear();
-                    rCountTheSameCards = 0;
-                }
-                flag2 = false;
+                listToCheckValid.clear();
             }
 
-            if ((lCountTheSameCards == 2 && rCountTheSameCards == 3) || (lCountTheSameCards == 3 && rCountTheSameCards == 2)) {
+            if (couple && set) {
                 return new Combo(ComboEnum.FULLHOUSE, allCards, kicker);
             }
         }

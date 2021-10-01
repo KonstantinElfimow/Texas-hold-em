@@ -16,6 +16,5 @@ public class Application {
         String gameAsString = game.getGameComments().toString();
         inputOutput.writeIn(gameAsString);
         System.out.println(gameAsString);
-        System.exit(0);
     }
 }
