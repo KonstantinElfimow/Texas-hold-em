@@ -160,7 +160,7 @@ class GameService {
             }
         }
 
-        List<Player> finalWinners = new ArrayList<>();
+        Set<Player> finalWinners = new HashSet<>();
         if (tempWinners.size() > 1) {
             Player player1 = tempWinners.get(0);
             Player player2 = tempWinners.get(1);
@@ -184,36 +184,30 @@ class GameService {
 
                 int compareKickers = comparator.compare(kicker1, kicker2);
                 if (compareKickers > 0 && comparator.compare(theHighestKicker, kicker2) == 0) {
-                    if (!finalWinners.contains(player2)) {
-                        finalWinners.add(player2);
-                    }
+                    finalWinners.add(player2);
                     finalWinners.remove(player1);
                     if (i + 1 != tempWinners.size()) {
                         player1 = player2;
                         player2 = tempWinners.get(i + 1);
                     }
                 } else if (compareKickers < 0 && comparator.compare(theHighestKicker, kicker1) == 0) {
-                    if (!finalWinners.contains(player1)) {
-                        finalWinners.add(player1);
-                    }
+                    finalWinners.add(player1);
                     finalWinners.remove(player2);
                     if (i + 1 != tempWinners.size()) {
                         player2 = tempWinners.get(i + 1);
                     }
                 } else if (compareKickers == 0 && comparator.compare(theHighestKicker, kicker1) == 0) {
-                    if (!finalWinners.contains(player1)) {
-                        finalWinners.add(player1);
-                    }
-                    if (!finalWinners.contains(player2)) {
-                        finalWinners.add(player2);
-                    }
+                    finalWinners.add(player1);
+                    finalWinners.add(player2);
                     if (i + 1 != tempWinners.size()) {
                         player1 = player2;
                         player2 = tempWinners.get(i + 1);
                     }
                 }
             }
-        } else finalWinners = tempWinners;
+        } else {
+            finalWinners.addAll(tempWinners);
+        }
 
         int numberOfWinners = finalWinners.size();
         int commonPrize = game.getPrizeCash();

@@ -24,7 +24,6 @@ public class FullHouseService implements ICardsService {
 
         Card card1 = allCards.get(0);
         Card kicker = card1;
-        boolean flag;
 
         boolean couple = false;
         boolean set = false;
@@ -38,38 +37,40 @@ public class FullHouseService implements ICardsService {
                 if (!couple && !set) {
                     kicker = card1;
                 }
-                flag = true;
+                listToCheckValid.add(card2);
+                if (i + 1 != allCards.size()) {
+                    i++;
+                    Card afterCard2 = allCards.get(i);
+                    card1 = afterCard2;
+                    if (comparator.compare(card1, afterCard2) == 0) {
+                        listToCheckValid.add(afterCard2);
+                        if (!(listToCheckValid.contains(hand.get(0)) || listToCheckValid.contains(hand.get(1)))) {
+                            listToCheckValid.clear();
+                            continue;
+                        }
+                        if (!set) {
+                            set = true;
+                        } else {
+                            couple = true;
+                        }
+                    } else {
+                        card1 = card2;
+                        if (!(listToCheckValid.contains(hand.get(0)) || listToCheckValid.contains(hand.get(1)))) {
+                            listToCheckValid.clear();
+                            card1 = card2;
+                            continue;
+                        }
+                        couple = true;
+                    }
+                }
             } else {
                 listToCheckValid.clear();
+                listToCheckValid.add(card2);
                 if (!couple && !set) {
                     kicker = card2;
                 }
-                flag = false;
+                card1 = card2;
             }
-            listToCheckValid.add(card2);
-            card1 = card2;
-
-            if (flag) {
-                if (i + 1 != allCards.size()) {
-                    Card afterCard2 = allCards.get(i++);
-                    if (comparator.compare(card1, afterCard2) == 0) {
-                        listToCheckValid.add(afterCard2);
-                    }
-                }
-                if (listToCheckValid.contains(hand.get(0)) || listToCheckValid.contains(hand.get(1))) {
-                    if (listToCheckValid.size() == 2) {
-                        couple = true;
-                    } else if (listToCheckValid.size() == 3) {
-                        if (set) {
-                            couple = true;
-                        } else {
-                            set = true;
-                        }
-                    }
-                }
-                listToCheckValid.clear();
-            }
-
             if (couple && set) {
                 return new Combo(ComboEnum.FULLHOUSE, allCards, kicker);
             }
