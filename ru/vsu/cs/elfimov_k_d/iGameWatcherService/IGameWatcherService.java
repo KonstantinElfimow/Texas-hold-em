@@ -1,4 +1,4 @@
-package ru.vsu.cs.elfimov_k_d.IGameWatcherService;
+package ru.vsu.cs.elfimov_k_d.iGameWatcherService;
 
 import ru.vsu.cs.elfimov_k_d.model.Game;
 import ru.vsu.cs.elfimov_k_d.model.Player;

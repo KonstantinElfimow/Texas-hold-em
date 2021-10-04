@@ -30,5 +30,8 @@ public class Card {
         Card card = (Card) o;
         return getValue() == card.getValue() && getTypeOfSuit() == card.getTypeOfSuit();
     }
-
+    @Override
+    public int hashCode() {
+        return (value.getKickerScore() + 10) * (typeOfSuit.getId() + 1);
+    }
 }

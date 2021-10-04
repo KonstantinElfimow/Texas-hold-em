@@ -1,5 +1,5 @@
 package ru.vsu.cs.elfimov_k_d.model;
-import ru.vsu.cs.elfimov_k_d.IGameWatcherService.GameWatcherService;
+import ru.vsu.cs.elfimov_k_d.iGameWatcherService.GameWatcherService;
 
 import java.util.*;
 

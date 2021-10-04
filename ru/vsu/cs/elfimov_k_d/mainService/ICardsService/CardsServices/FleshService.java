@@ -1,14 +1,9 @@
 package ru.vsu.cs.elfimov_k_d.mainService.ICardsService.CardsServices;
 
-import ru.vsu.cs.elfimov_k_d.model.Card;
+import ru.vsu.cs.elfimov_k_d.model.*;
 import ru.vsu.cs.elfimov_k_d.mainService.ICardsService.ICardsService;
-import ru.vsu.cs.elfimov_k_d.model.Combo;
-import ru.vsu.cs.elfimov_k_d.model.ComboEnum;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class FleshService implements ICardsService {
     @Override
@@ -16,52 +11,46 @@ public class FleshService implements ICardsService {
         List<Card> allCards = new ArrayList<>();
         allCards.addAll(hand);
         allCards.addAll(table);
-        allCards.sort((c1, c2) -> {
-            int dif = c1.getTypeOfSuit().getId() - c2.getTypeOfSuit().getId();
-            if (dif == 0) {
-                return c2.getValue().getKickerScore() - c1.getValue().getKickerScore();
+
+        Map<TypeOfSuit, List<Value>> typeOfSuitAndValueListMap = new HashMap<>();
+        Card kicker = null;
+
+        for (Card card : allCards) {
+            if (!typeOfSuitAndValueListMap.containsKey(card.getTypeOfSuit())) {
+                List<Value> singletonList = new ArrayList<>();
+                singletonList.add(card.getValue());
+                typeOfSuitAndValueListMap.put(card.getTypeOfSuit(), singletonList);
             } else {
-                return dif;
-            }
-        });
-
-        Comparator<Card> comparator = (c1, c2) -> {
-            if (c1.getTypeOfSuit().getId() - c2.getTypeOfSuit().getId() == 0) {
-                return 0;
-            }
-            return 1;
-        };
-
-        int count = 0;
-        Card card1 = allCards.get(0);
-        Card kicker = card1;
-
-        List<Card> listToCheckValid = new ArrayList<>(Collections.singleton(card1));
-        for (int i = 1; i < allCards.size(); i++) {
-            Card card2 = allCards.get(i);
-
-            if (comparator.compare(card1, card2) == 0) {
-                count++;
-                if (kicker == null) {
-                    kicker = card2;
-                }
-                listToCheckValid.add(card2);
-                if (count == 4) {
-                    if (listToCheckValid.contains(hand.get(0)) || listToCheckValid.contains(hand.get(1))) {
-                        return new Combo(ComboEnum.FLESH, allCards, kicker);
-                    } else {
-                        listToCheckValid.clear();
-                        kicker = null;
-                        count = 0;
+                for (Map.Entry<TypeOfSuit, List<Value>> entry : typeOfSuitAndValueListMap.entrySet()) {
+                    if (entry.getKey().equals(card.getTypeOfSuit())) {
+                        List<Value> values =  typeOfSuitAndValueListMap.get(card.getTypeOfSuit());
+                        values.add(card.getValue());
+                        entry.setValue(values);
                     }
                 }
-            } else {
-                listToCheckValid.clear();
-                listToCheckValid.add(card2);
-                kicker = null;
-                count = 0;
             }
-            card1 = card2;
+        }
+
+        for (Map.Entry<TypeOfSuit, List<Value>> entry : typeOfSuitAndValueListMap.entrySet()) {
+            List<Value> valueList = entry.getValue();
+            if (valueList.size() >= 5) {
+                boolean flag = false;
+                TypeOfSuit typeOfSuit = entry.getKey();
+                for (Card card : hand) {
+                    if (card.getTypeOfSuit().equals(typeOfSuit)) {
+                        flag = true;
+                        break;
+                    }
+                }
+                if (flag) {
+                    for (Value valueOfCard : valueList) {
+                        if (kicker == null || valueOfCard.getKickerScore() - kicker.getValue().getKickerScore() > 0) {
+                            kicker = new Card(valueOfCard, typeOfSuit);
+                        }
+                    }
+                    return new Combo(ComboEnum.FLESH, allCards, kicker);
+                }
+            }
         }
         return null;
     }

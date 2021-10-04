@@ -1,13 +1,9 @@
 package ru.vsu.cs.elfimov_k_d.mainService.ICardsService.CardsServices;
 
-import ru.vsu.cs.elfimov_k_d.model.Card;
+import ru.vsu.cs.elfimov_k_d.model.*;
 import ru.vsu.cs.elfimov_k_d.mainService.ICardsService.ICardsService;
-import ru.vsu.cs.elfimov_k_d.model.Combo;
-import ru.vsu.cs.elfimov_k_d.model.ComboEnum;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class CoupleService implements ICardsService {
     @Override
@@ -15,21 +11,32 @@ public class CoupleService implements ICardsService {
         List<Card> allCards = new ArrayList<>();
         allCards.addAll(hand);
         allCards.addAll(table);
-        allCards.sort((c1, c2) -> c2.getValue().getKickerScore() - c1.getValue().getKickerScore());
 
-        Comparator<Card> comparator = ((c1, c2) -> c1.getValue().getKickerScore() - c2.getValue().getKickerScore());
+        Map<Value, List<TypeOfSuit>> valueAndTypeOfSuitMap = new HashMap<>();
+        Card kicker;
 
-        Card card1 = allCards.get(0);
-        Card kicker = card1;
-        for (int i = 1; i < allCards.size(); i++) {
-            Card card2 = allCards.get(i);
-            if (comparator.compare(card1, card2) == 0) {
-                if (hand.contains(card1) || hand.contains(card2)) {
-                    return new Combo(ComboEnum.COUPLE, allCards, kicker);
-                }
+        for (Card card : allCards) {
+            if (!valueAndTypeOfSuitMap.containsKey(card.getValue())) {
+                List<TypeOfSuit> singletonList = new ArrayList<>();
+                singletonList.add(card.getTypeOfSuit());
+                valueAndTypeOfSuitMap.put(card.getValue(), singletonList);
             } else {
-                kicker = card2;
-                card1 = card2;
+                for (Map.Entry<Value, List<TypeOfSuit>> entry : valueAndTypeOfSuitMap.entrySet()) {
+                    if (entry.getKey().equals(card.getValue())) {
+                        List<TypeOfSuit> suits = valueAndTypeOfSuitMap.get(card.getValue());
+                        suits.add(card.getTypeOfSuit());
+                        entry.setValue(suits);
+                    }
+                }
+            }
+        }
+
+        hand.sort((c1, c2) -> c2.getValue().getKickerScore() - c1.getValue().getKickerScore());
+        for (Card handCard : hand) {
+            kicker = handCard;
+            List<TypeOfSuit> suits = valueAndTypeOfSuitMap.get(handCard.getValue());
+            if (suits.size() == 2) {
+                return new Combo(ComboEnum.COUPLE, allCards, kicker);
             }
         }
         return null;

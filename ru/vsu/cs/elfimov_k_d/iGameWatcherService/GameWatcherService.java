@@ -1,4 +1,4 @@
-package ru.vsu.cs.elfimov_k_d.IGameWatcherService;
+package ru.vsu.cs.elfimov_k_d.iGameWatcherService;
 
 import ru.vsu.cs.elfimov_k_d.model.Card;
 import ru.vsu.cs.elfimov_k_d.model.Combo;
@@ -25,6 +25,8 @@ public class GameWatcherService implements IGameWatcherService {
 
         Map<Player, Combo> playersCombo = game.getPlayersCombo();
         comments.append("Старшая комбинация у игрока ").append(player.getName()).append(": ").append(playersCombo.get(player).getComboEnum().getName());
+        comments.append("\n");
+        comments.append("Старшая карта: ").append(playersCombo.get(player).getKicker().getInfoOfTheCard());
         comments.append("\n");
     }
 

@@ -10,13 +10,11 @@ import java.util.*;
 public class KickerService implements ICardsService {
     @Override
     public Combo isCombination(List<Card> hand, List<Card> table) {
-        Card kicker;
-        Comparator<Card> comparator = (player1Card, player2Card) -> player1Card.getValue().getKickerScore() - player2Card.getValue().getKickerScore();
-        int compare = comparator.compare(hand.get(0), hand.get(1));
-        if (compare >= 0) {
-            kicker = hand.get(0);
-        } else {
-            kicker = hand.get(1);
+        Card kicker = hand.get(0);
+        for (Card handCard : hand) {
+            if (handCard.getValue().getKickerScore() - kicker.getValue().getKickerScore() > 0) {
+                kicker = handCard;
+            }
         }
         return new Combo(ComboEnum.KICKER, new ArrayList<>(Collections.singletonList(kicker)), kicker);
     }
