@@ -35,8 +35,14 @@ public class TwoCoupleService implements ICardsService {
         boolean couple2 = false;
 
         hand.sort((c1, c2) -> c1.getValue().getKickerScore() - c2.getValue().getKickerScore());
+        Card repeatCard = null;
         for (Card handCard : hand) {
             kicker = handCard;
+            if (repeatCard == null) {
+                repeatCard = handCard;
+            } else if (repeatCard.getValue().equals(handCard.getValue())) {
+                continue;
+            }
             List<TypeOfSuit> suits = valueAndTypeOfSuitMap.get(handCard.getValue());
             if (suits.size() == 2) {
                 if (!couple1) {
