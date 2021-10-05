@@ -1,7 +1,7 @@
 package ru.vsu.cs.elfimov_k_d.model;
 
 public enum GameState {
-    FLOP(3, "Флоп"), TURN(1, "Тёрн"), RIVER(1, "Ривер");
+    FLOP(3, "Флоп"), TURN(1, "Тёрн"), RIVER(1, "Ривер"), ENDING(0, "Подвод результатов");
 
     private int cardCount;
     private String name;

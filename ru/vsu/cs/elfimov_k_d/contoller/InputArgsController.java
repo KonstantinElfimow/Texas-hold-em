@@ -15,7 +15,6 @@ public class InputArgsController {
         parseCmdArgs(args);
     }
 
-
     private static class InputArgs {
         String input;           // название входного файла
         String output;          // название выходного файла
@@ -98,4 +97,3 @@ public class InputArgsController {
         }
     }
 }
-

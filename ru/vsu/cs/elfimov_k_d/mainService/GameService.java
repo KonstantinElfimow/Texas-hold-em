@@ -21,17 +21,23 @@ class GameService {
 
     void play(Game game) {
         for (GameState state : EnumSet.allOf(GameState.class)) {
+            game.getGameWatcherService().lineComment(game);
             game.setGameState(state);
             game.getGameWatcherService().nextStateComment(game);
+
+            if (!state.equals(GameState.ENDING)) {
+                doStep(game);
+            }
+
             if (state.equals(GameState.FLOP)) {
                 distributionForPlayers(game);
             }
             distributionForTheTable(game);
-            game.getGameWatcherService().cardsOnTheTableComment(game);
+            if (!state.equals(GameState.ENDING)) {
+                game.getGameWatcherService().cardsOnTheTableComment(game);
+            }
 
-            doStep(game);
-
-            if (state.equals(GameState.RIVER) || !(game.getQueue().size() > 1)) {
+            if (state.equals(GameState.ENDING) || !(game.getQueue().size() > 1)) {
                 findWinners(game);
                 game.getGameWatcherService().winnersComment(game);
                 break;
@@ -42,31 +48,39 @@ class GameService {
     private void doStep(Game game) {
         Queue<Player> newQueue = new LinkedList<>();
         Queue<Player> queue = game.getQueue();
-        for (Player player : queue) {
-            boolean playerInGame = true;
-            List<Card> hisHand = game.getPlayersWithCards().get(player);
-            game.getGameWatcherService().playerWithCardsComment(game, player);
+        GameState gameState = game.getGameState();
+        if (!gameState.equals(GameState.FLOP)) {
+            for (Player player : queue) {
+                boolean playerInGame = true;
+                List<Card> hisHand = game.getPlayersWithCards().get(player);
+                game.getGameWatcherService().playerWithCardsComment(game, player);
+                findCombinationForThePlayer(game, player);
 
-            findCombinationForThePlayer(game, player);
-            game.getGameWatcherService().combinationComment(game, player);
-            switch (game.getGameState()) {
-                case FLOP:
-                    playerInGame = !hisHand.contains(new Card(Value.FOUR, TypeOfSuit.HEARTS));
-                    break;
-                case TURN:
-                    playerInGame = !hisHand.contains(new Card(Value.FIVE, TypeOfSuit.CLUBS));
-                    break;
-                case RIVER:
-                    playerInGame = !hisHand.contains(new Card(Value.SIX, TypeOfSuit.DIAMONDS));
-                    break;
+                switch (game.getGameState()) {
+                    case FLOP:
+                        playerInGame = !hisHand.contains(new Card(Value.FOUR, TypeOfSuit.HEARTS));
+                        break;
+                    case TURN:
+                        playerInGame = !hisHand.contains(new Card(Value.FIVE, TypeOfSuit.CLUBS));
+                        break;
+                    case RIVER:
+                        playerInGame = !hisHand.contains(new Card(Value.SIX, TypeOfSuit.DIAMONDS));
+                        break;
+                }
+                if (playerInGame) {
+                    newQueue.add(player);
+                    putDownBetsAndCalculateNewPrize(game, player);
+                    game.getGameWatcherService().betComment(game, player);
+                } else {
+                    fold(game, player);
+                    game.getGameWatcherService().foldComment(game, player);
+                }
             }
-            if (playerInGame) {
-                newQueue.add(player);
+        } else {
+            for (Player player : queue) {
                 putDownBetsAndCalculateNewPrize(game, player);
                 game.getGameWatcherService().betComment(game, player);
-            } else {
-                fold(game, player);
-                game.getGameWatcherService().foldComment(game, player);
+                newQueue.add(player);
             }
         }
         game.setQueue(newQueue);
@@ -143,7 +157,9 @@ class GameService {
         Map<Player, Combo> playersCombo = game.getPlayersCombo();
         List<Player> tempWinners = new ArrayList<>();
         Combo seniorCombo = null;
-
+        for (Player player : game.getQueue()) {
+            game.getGameWatcherService().combinationComment(game, player);
+        }
         for (Map.Entry<Player, Combo> playerComboEntry : playersCombo.entrySet()) {
             Player player = playerComboEntry.getKey();
             Combo combo = playerComboEntry.getValue();

@@ -4,6 +4,7 @@ import ru.vsu.cs.elfimov_k_d.model.Game;
 import ru.vsu.cs.elfimov_k_d.model.Player;
 
 public interface IGameWatcherService {
+    void lineComment(Game game);
     void cardsOnTheTableComment(Game game);
     void playerWithCardsComment(Game game, Player player);
     void foldComment(Game game, Player player);

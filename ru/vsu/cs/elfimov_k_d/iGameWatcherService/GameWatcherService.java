@@ -11,11 +11,18 @@ import java.util.Map;
 public class GameWatcherService implements IGameWatcherService {
 
     @Override
+    public void lineComment(Game game) {
+        StringBuilder comments = game.getGameComments();
+        comments.append("\n");
+        comments.append("-----------------------------");
+        comments.append("\n");
+    }
+
+    @Override
     public void nextStateComment(Game game) {
         StringBuilder comments = game.getGameComments();
         comments.append("\n");
-        comments.append("Начинается ").append(game.getGameState().getName());
-        comments.append("\n");
+        comments.append("Начинается: ").append(game.getGameState().getName());
         comments.append("\n");
     }
 
@@ -24,6 +31,7 @@ public class GameWatcherService implements IGameWatcherService {
         StringBuilder comments = game.getGameComments();
 
         Map<Player, Combo> playersCombo = game.getPlayersCombo();
+        comments.append("\n");
         comments.append("Старшая комбинация у игрока ").append(player.getName()).append(": ").append(playersCombo.get(player).getComboEnum().getName());
         comments.append("\n");
         comments.append("Старшая карта: ").append(playersCombo.get(player).getKicker().getInfoOfTheCard());
@@ -33,6 +41,7 @@ public class GameWatcherService implements IGameWatcherService {
     @Override
     public void cardsOnTheTableComment(Game game) {
         StringBuilder comments = game.getGameComments();
+        comments.append("\n");
         comments.append("Карты на столе: ");
         comments.append("\n");
         List<Card> cardsOnTable = game.getCardsOnTheTable();
@@ -57,7 +66,7 @@ public class GameWatcherService implements IGameWatcherService {
     @Override
     public void foldComment(Game game, Player player) {
         StringBuilder comments = game.getGameComments();
-        comments.append("О, нет! Игрок ").append(player.getName()).append(" выбывает из игры");
+        comments.append("Игрок ").append(player.getName()).append(" выбывает из игры");
         Map<Player, Integer> bets = game.getBets();
         if (bets.containsKey(player)) {
             for (Map.Entry<Player, Integer> bet : bets.entrySet()) {
@@ -76,7 +85,7 @@ public class GameWatcherService implements IGameWatcherService {
         Map<Player, Integer> bets = game.getBets();
         for (Map.Entry<Player, Integer> bet : bets.entrySet()) {
             if (bet.getKey().equals(player)) {
-                comments.append("Общая ставка игрока ").append(player.getName()).append(" составила: ").append(bet.getValue());
+                comments.append("Игрок сделал ставку. Общая ставка игрока ").append(player.getName()).append(" составила: ").append(bet.getValue());
                 break;
             }
         }
