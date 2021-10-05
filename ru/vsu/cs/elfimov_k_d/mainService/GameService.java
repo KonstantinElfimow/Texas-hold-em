@@ -57,9 +57,6 @@ class GameService {
                 findCombinationForThePlayer(game, player);
 
                 switch (game.getGameState()) {
-                    case FLOP:
-                        playerInGame = !hisHand.contains(new Card(Value.FOUR, TypeOfSuit.HEARTS));
-                        break;
                     case TURN:
                         playerInGame = !hisHand.contains(new Card(Value.FIVE, TypeOfSuit.CLUBS));
                         break;
@@ -76,14 +73,13 @@ class GameService {
                     game.getGameWatcherService().foldComment(game, player);
                 }
             }
+            game.setQueue(newQueue);
         } else {
             for (Player player : queue) {
                 putDownBetsAndCalculateNewPrize(game, player);
                 game.getGameWatcherService().betComment(game, player);
-                newQueue.add(player);
             }
         }
-        game.setQueue(newQueue);
     }
 
     private void distributionForPlayers(Game game) {
