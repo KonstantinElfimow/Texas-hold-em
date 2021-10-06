@@ -38,7 +38,6 @@ public class TwoCoupleService implements ICardsService {
         Card repeatCard = null;
         for (Card handCard : hand) {
             if (repeatCard == null) {
-                repeatCard = handCard;
             } else if (repeatCard.getValue().equals(handCard.getValue())) {
                 continue;
             }
