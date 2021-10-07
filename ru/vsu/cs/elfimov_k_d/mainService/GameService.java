@@ -21,26 +21,25 @@ class GameService {
 
     void play(Game game) {
         for (GameState state : EnumSet.allOf(GameState.class)) {
-            game.getGameWatcherService().lineComment(game);
             game.setGameState(state);
             game.getGameWatcherService().nextStateComment(game);
 
-            if (!state.equals(GameState.ENDING)) {
-                doStep(game);
-            }
+            doStep(game);
 
             if (state.equals(GameState.FLOP)) {
                 distributionForPlayers(game);
             }
             distributionForTheTable(game);
-            if (!state.equals(GameState.ENDING)) {
-                game.getGameWatcherService().cardsOnTheTableComment(game);
-            }
+            game.getGameWatcherService().cardsOnTheTableComment(game);
 
-            if (state.equals(GameState.ENDING) || !(game.getQueue().size() > 1)) {
+            if (state.equals(GameState.RIVER) || !(game.getQueue().size() > 1)) {
+                game.getGameWatcherService().lineComment(game);
+                game.setGameState(GameState.ENDING);
+                game.getGameWatcherService().nextStateComment(game);
+
                 findWinners(game);
                 game.getGameWatcherService().winnersComment(game);
-                break;
+                return;
             }
         }
     }
