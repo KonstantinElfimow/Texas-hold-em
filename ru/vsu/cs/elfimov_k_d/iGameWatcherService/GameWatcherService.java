@@ -1,9 +1,6 @@
 package ru.vsu.cs.elfimov_k_d.iGameWatcherService;
 
-import ru.vsu.cs.elfimov_k_d.model.Card;
-import ru.vsu.cs.elfimov_k_d.model.Combo;
-import ru.vsu.cs.elfimov_k_d.model.Game;
-import ru.vsu.cs.elfimov_k_d.model.Player;
+import ru.vsu.cs.elfimov_k_d.model.*;
 
 import java.util.List;
 import java.util.Map;
@@ -29,12 +26,19 @@ public class GameWatcherService implements IGameWatcherService {
     @Override
     public void combinationComment(Game game, Player player) {
         StringBuilder comments = game.getGameComments();
-
-        Map<Player, Combo> playersCombo = game.getPlayersCombo();
+        Combo playerCombo = game.getPlayersCombo().get(player);
         comments.append("\n");
-        comments.append("Старшая комбинация у игрока ").append(player.getName()).append(": ").append(playersCombo.get(player).getComboEnum().getName());
+        comments.append("Старшая комбинация у игрока ").append(player.getName()).append(": ").append(playerCombo.getComboEnum().getName());
+        if (!playerCombo.getComboEnum().equals(ComboEnum.KICKER)) {
+            comments.append("\n");
+            comments.append("Карты: ");
+            comments.append("\n");
+            for (Card card : playerCombo.getWinCombo()) {
+                comments.append(card.getInfoOfTheCard());
+            }
+        }
         comments.append("\n");
-        comments.append("Старшая карта: ").append(playersCombo.get(player).getKicker().getInfoOfTheCard());
+        comments.append("Старшая карта: ").append(playerCombo.getKicker().getInfoOfTheCard());
         comments.append("\n");
     }
 

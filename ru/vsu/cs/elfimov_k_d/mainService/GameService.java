@@ -24,12 +24,13 @@ class GameService {
             game.setGameState(state);
             game.getGameWatcherService().nextStateComment(game);
 
-            doStep(game);
-
-            if (state.equals(GameState.FLOP)) {
-                distributionForPlayers(game);
-            }
             distributionForTheTable(game);
+            doStep(game);
+            if (state.equals(GameState.PREFLOP)) {
+                distributionForPlayers(game);
+                continue;
+            }
+
             game.getGameWatcherService().cardsOnTheTableComment(game);
 
             if (state.equals(GameState.RIVER) || !(game.getQueue().size() > 1)) {
@@ -48,7 +49,7 @@ class GameService {
         Queue<Player> newQueue = new LinkedList<>();
         Queue<Player> queue = game.getQueue();
         GameState gameState = game.getGameState();
-        if (!gameState.equals(GameState.FLOP)) {
+        if (!gameState.equals(GameState.PREFLOP)) {
             for (Player player : queue) {
                 boolean playerInGame = true;
                 List<Card> hisHand = game.getPlayersWithCards().get(player);
@@ -56,11 +57,14 @@ class GameService {
                 findCombinationForThePlayer(game, player);
 
                 switch (game.getGameState()) {
+                    case FLOP:
+                        playerInGame = !hisHand.contains(new Card(Value.DEUCE, TypeOfSuit.HEARTS));
+                        break;
                     case TURN:
-                        playerInGame = !hisHand.contains(new Card(Value.FIVE, TypeOfSuit.CLUBS));
+                        playerInGame = !hisHand.contains(new Card(Value.TREY, TypeOfSuit.HEARTS));
                         break;
                     case RIVER:
-                        playerInGame = !hisHand.contains(new Card(Value.SIX, TypeOfSuit.DIAMONDS));
+                        playerInGame = !hisHand.contains(new Card(Value.FOUR, TypeOfSuit.HEARTS));
                         break;
                 }
                 if (playerInGame) {

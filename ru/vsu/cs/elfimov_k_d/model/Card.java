@@ -16,7 +16,7 @@ public class Card {
         return value;
     }
     public String getInfoOfTheCard() {
-        return value.getSymbol() + " " + typeOfSuit.getSymbol();
+        return " " + value.getSymbol() + " " + typeOfSuit.getSymbol() + " ";
     }
 
     @Override
