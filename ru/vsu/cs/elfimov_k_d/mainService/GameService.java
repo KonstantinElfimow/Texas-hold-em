@@ -46,10 +46,10 @@ class GameService {
     }
 
     private void doStep(Game game) {
-        Queue<Player> newQueue = new LinkedList<>();
         Queue<Player> queue = game.getQueue();
         GameState gameState = game.getGameState();
         if (!gameState.equals(GameState.PREFLOP)) {
+            Queue<Player> newQueue = new LinkedList<>();
             for (Player player : queue) {
                 boolean playerInGame = true;
                 List<Card> hisHand = game.getPlayersWithCards().get(player);
@@ -60,10 +60,10 @@ class GameService {
                         playerInGame = !hisHand.contains(new Card(Value.DEUCE, TypeOfSuit.HEARTS));
                         break;
                     case TURN:
-                        playerInGame = !hisHand.contains(new Card(Value.TREY, TypeOfSuit.HEARTS));
+                        playerInGame = !hisHand.contains(new Card(Value.TREY, TypeOfSuit.SPADES));
                         break;
                     case RIVER:
-                        playerInGame = !hisHand.contains(new Card(Value.FOUR, TypeOfSuit.HEARTS));
+                        playerInGame = !hisHand.contains(new Card(Value.FOUR, TypeOfSuit.DIAMONDS));
                         break;
                 }
                 if (playerInGame) {
