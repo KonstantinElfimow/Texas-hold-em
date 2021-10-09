@@ -15,13 +15,15 @@ class GameService {
                 new SetService(), new TwoCoupleService(), new CoupleService(), new KickerService() };
     }
 
-    Game createNewGame(List<Player> players) {
-        return new Game(players);
+    Game createNewGame() {
+        return new Game();
     }
 
-    void play(Game game) {
+    void play(Game game, List<Player> players) {
+        game.setStartQueue(players);
         for (GameState state : EnumSet.allOf(GameState.class)) {
             game.setGameState(state);
+            game.getGameWatcherService().lineComment(game);
             game.getGameWatcherService().nextStateComment(game);
 
             distributionForTheTable(game);

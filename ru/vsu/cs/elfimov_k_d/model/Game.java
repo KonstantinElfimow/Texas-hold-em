@@ -19,8 +19,7 @@ public class Game {
     private int prizeCash = 0;
     private Map<Player, Integer> winnersAndPrizes = new HashMap<>();
 
-    public Game(List<Player> players) {
-        queue.addAll(players);
+    public Game() {
         for (TypeOfSuit typeOfSuit : TypeOfSuit.values()) {
             for (Value value : Value.values()) {
                 Card card = new Card(value, typeOfSuit);
@@ -64,6 +63,9 @@ public class Game {
         return winnersAndPrizes;
     }
 
+    public void setStartQueue(List<Player> players) {
+        queue.addAll(players);
+    }
     public void setGameState(GameState gameState) {
         this.gameState = gameState;
     }
