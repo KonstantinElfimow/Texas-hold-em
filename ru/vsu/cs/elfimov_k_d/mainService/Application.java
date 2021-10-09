@@ -12,10 +12,10 @@ public class Application {
     public static void main(String[] args) {
         Locale.setDefault(Locale.ROOT);
         InputArgsController inputOutput = new InputArgsController(args);
-        GameService gameService = new GameService();
-        Game game = gameService.createNewGame();
         List<Player> players = inputOutput.readNamesFromFileAndFormPlayerList();
-        gameService.play(game, players);
+        GameService gameService = new GameService();
+        Game game = gameService.createNewGame(players);
+        gameService.play(game);
         String gameAsString = game.getGameComments().toString();
         inputOutput.writeIn(gameAsString);
         System.out.println(gameAsString);

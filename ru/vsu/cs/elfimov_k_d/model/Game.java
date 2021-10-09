@@ -20,13 +20,6 @@ public class Game {
     private Map<Player, Integer> winnersAndPrizes = new HashMap<>();
 
     public Game() {
-        for (TypeOfSuit typeOfSuit : TypeOfSuit.values()) {
-            for (Value value : Value.values()) {
-                Card card = new Card(value, typeOfSuit);
-                deck.add(card);
-            }
-        }
-        Collections.shuffle(deck);
     }
 
     public StringBuilder getGameComments() {

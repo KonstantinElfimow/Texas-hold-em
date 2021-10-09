@@ -15,12 +15,21 @@ class GameService {
                 new SetService(), new TwoCoupleService(), new CoupleService(), new KickerService() };
     }
 
-    Game createNewGame() {
-        return new Game();
+    Game createNewGame(List<Player> players) {
+        Game game = new Game();
+        game.setStartQueue(players);
+        List<Card> deck = game.getDeck();
+        for (TypeOfSuit typeOfSuit : TypeOfSuit.values()) {
+            for (Value value : Value.values()) {
+                Card card = new Card(value, typeOfSuit);
+                deck.add(card);
+            }
+        }
+        Collections.shuffle(deck);
+        return game;
     }
 
-    void play(Game game, List<Player> players) {
-        game.setStartQueue(players);
+    void play(Game game) {
         for (GameState state : EnumSet.allOf(GameState.class)) {
             game.setGameState(state);
             game.getGameWatcherService().lineComment(game);
