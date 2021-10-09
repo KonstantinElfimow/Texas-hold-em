@@ -19,9 +19,6 @@ public class Game {
     private int prizeCash = 0;
     private Map<Player, Integer> winnersAndPrizes = new HashMap<>();
 
-    public Game() {
-    }
-
     public StringBuilder getGameComments() {
         return gameComments;
     }
