@@ -55,7 +55,6 @@ class GameService {
                 List<Card> hisHand = game.getPlayersWithCards().get(player);
                 game.getGameWatcherService().playerWithCardsComment(game, player);
                 findCombinationForThePlayer(game, player);
-
                 switch (game.getGameState()) {
                     case FLOP:
                         playerInGame = !hisHand.contains(new Card(Value.DEUCE, TypeOfSuit.HEARTS));
