@@ -11,7 +11,7 @@ public class GameWatcherService implements IGameWatcherService {
     public void lineComment(Game game) {
         StringBuilder comments = game.getGameComments();
         comments.append("\n");
-        comments.append("-----------------------------");
+        comments.append("----------------------------");
         comments.append("\n");
     }
 
@@ -34,11 +34,11 @@ public class GameWatcherService implements IGameWatcherService {
             comments.append("Карты: ");
             comments.append("\n");
             for (Card card : playerCombo.getWinCombo()) {
-                comments.append(card.getInfoOfTheCard());
+                comments.append(card.toString());
             }
         }
         comments.append("\n");
-        comments.append("Старшая карта: ").append(playerCombo.getKicker().getInfoOfTheCard());
+        comments.append("Старшая карта: ").append(playerCombo.getKicker().toString());
         comments.append("\n");
     }
 
@@ -50,7 +50,7 @@ public class GameWatcherService implements IGameWatcherService {
         comments.append("\n");
         List<Card> cardsOnTable = game.getCardsOnTheTable();
         for (Card card : cardsOnTable) {
-            comments.append(card.getInfoOfTheCard());
+            comments.append(card.toString());
             comments.append("\n");
         }
     }
@@ -62,7 +62,7 @@ public class GameWatcherService implements IGameWatcherService {
         comments.append("Карты у игрока ").append(player.getName()).append(": ");
         comments.append("\n");
         for (Card card : game.getPlayersWithCards().get(player)) {
-            comments.append(card.getInfoOfTheCard());
+            comments.append(card.toString());
             comments.append("\n");
         }
     }

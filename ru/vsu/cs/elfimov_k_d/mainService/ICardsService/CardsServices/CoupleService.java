@@ -12,31 +12,17 @@ public class CoupleService implements ICardsService {
         allCards.addAll(hand);
         allCards.addAll(table);
 
-        Map<Value, List<TypeOfSuit>> valueAndTypeOfSuitMap = new HashMap<>();
-        Card kicker;
-
+        allCards.sort((c1, c2) -> c2.getValue().getKickerScore() - c1.getValue().getKickerScore());
+        Card kicker = null;
         for (Card card : allCards) {
-            if (!valueAndTypeOfSuitMap.containsKey(card.getValue())) {
-                List<TypeOfSuit> singletonList = new ArrayList<>();
-                singletonList.add(card.getTypeOfSuit());
-                valueAndTypeOfSuitMap.put(card.getValue(), singletonList);
-            } else {
-                for (Map.Entry<Value, List<TypeOfSuit>> entry : valueAndTypeOfSuitMap.entrySet()) {
-                    if (entry.getKey().equals(card.getValue())) {
-                        List<TypeOfSuit> suits = valueAndTypeOfSuitMap.get(card.getValue());
-                        suits.add(card.getTypeOfSuit());
-                        entry.setValue(suits);
-                    }
-                }
+            if (kicker == null) {
+                kicker = card;
+                continue;
             }
-        }
-
-        hand.sort((c1, c2) -> c2.getValue().getKickerScore() - c1.getValue().getKickerScore());
-        for (Card handCard : hand) {
-            kicker = handCard;
-            List<TypeOfSuit> suits = valueAndTypeOfSuitMap.get(handCard.getValue());
-            if (suits.size() == 2) {
+            if (kicker.getValue() == card.getValue() && (hand.contains(kicker) || hand.contains(card))) {
                 return new Combo(ComboEnum.COUPLE, allCards, kicker);
+            } else {
+                kicker = card;
             }
         }
         return null;

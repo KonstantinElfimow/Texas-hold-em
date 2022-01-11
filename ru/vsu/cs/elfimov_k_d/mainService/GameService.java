@@ -1,18 +1,44 @@
 package ru.vsu.cs.elfimov_k_d.mainService;
 
-import ru.vsu.cs.elfimov_k_d.model.*;
-import ru.vsu.cs.elfimov_k_d.mainService.ICardsService.*;
-import ru.vsu.cs.elfimov_k_d.mainService.ICardsService.CardsServices.*;
+import ru.vsu.cs.elfimov_k_d.mainService.ICardsService.CardsServices.CoupleService;
+import ru.vsu.cs.elfimov_k_d.mainService.ICardsService.CardsServices.FleshService;
+import ru.vsu.cs.elfimov_k_d.mainService.ICardsService.CardsServices.FullHouseService;
+import ru.vsu.cs.elfimov_k_d.mainService.ICardsService.CardsServices.KareService;
+import ru.vsu.cs.elfimov_k_d.mainService.ICardsService.CardsServices.KickerService;
+import ru.vsu.cs.elfimov_k_d.mainService.ICardsService.CardsServices.RoyalFleshService;
+import ru.vsu.cs.elfimov_k_d.mainService.ICardsService.CardsServices.SetService;
+import ru.vsu.cs.elfimov_k_d.mainService.ICardsService.CardsServices.StreetFleshService;
+import ru.vsu.cs.elfimov_k_d.mainService.ICardsService.CardsServices.StreetService;
+import ru.vsu.cs.elfimov_k_d.mainService.ICardsService.CardsServices.TwoCoupleService;
+import ru.vsu.cs.elfimov_k_d.mainService.ICardsService.ICardsService;
+import ru.vsu.cs.elfimov_k_d.model.Card;
+import ru.vsu.cs.elfimov_k_d.model.Combo;
+import ru.vsu.cs.elfimov_k_d.model.Game;
+import ru.vsu.cs.elfimov_k_d.model.GameState;
+import ru.vsu.cs.elfimov_k_d.model.Player;
+import ru.vsu.cs.elfimov_k_d.model.TypeOfSuit;
+import ru.vsu.cs.elfimov_k_d.model.Value;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
 class GameService {
     private ICardsService[] combinations;
 
     GameService() {
-        combinations = new ICardsService[] { new RoyalFleshService(), new StreetFleshService(), new KareService(),
+        combinations = new ICardsService[]{new RoyalFleshService(), new StreetFleshService(), new KareService(),
                 new FullHouseService(), new FleshService(), new StreetService(),
-                new SetService(), new TwoCoupleService(), new CoupleService(), new KickerService() };
+                new SetService(), new TwoCoupleService(), new CoupleService(), new KickerService()};
     }
 
     Game createNewGame(List<Player> players) {
@@ -104,11 +130,13 @@ class GameService {
         }
         game.setPlayersWithCards(playersWithCards);
     }
+
     private void distributionForTheTable(Game game) {
         List<Card> cardsOnTheTable = game.getCardsOnTheTable();
         List<Card> cards = getAFewCardsFromTheDeck(game, game.getGameState().getCardCount());
         cardsOnTheTable.addAll(cards);
     }
+
     private List<Card> getAFewCardsFromTheDeck(Game game, int number) {
         List<Card> cards = new ArrayList<>();
         List<Card> deck = game.getDeck();
@@ -124,8 +152,8 @@ class GameService {
         Map<Player, Combo> playersCombo = game.getPlayersCombo();
         Map<Player, List<Card>> playersWithCards = game.getPlayersWithCards();
 
-        List<Card>  hand = playersWithCards.get(player);
-        List<Card>  table = game.getCardsOnTheTable();
+        List<Card> hand = playersWithCards.get(player);
+        List<Card> table = game.getCardsOnTheTable();
 
         for (ICardsService combination : combinations) {
             Combo combo = combination.isCombination(hand, table);
@@ -135,6 +163,7 @@ class GameService {
             }
         }
     }
+
     private void putDownBetsAndCalculateNewPrize(Game game, Player player) {
         int prizeCash = game.getPrizeCash();
         Map<Player, Integer> bets = game.getBets();
@@ -151,6 +180,7 @@ class GameService {
         bets.put(player, newBetOfThePlayer);
         game.setThePrize(prizeCash);
     }
+
     private void fold(Game game, Player player) {
         Map<Player, List<Card>> playersWithCards = game.getPlayersWithCards();
         Map<Player, Integer> bets = game.getBets();
